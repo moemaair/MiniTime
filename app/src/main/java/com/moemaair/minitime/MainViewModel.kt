@@ -3,9 +3,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
 class MainViewModel : ViewModel(){
-
+    val startVal = 10
     val timeCountDown = flow<Int>{
-        val startVal = 10
        var currentVal = startVal
 
         emit(currentVal)
