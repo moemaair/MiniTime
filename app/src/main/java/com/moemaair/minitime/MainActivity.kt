@@ -1,5 +1,6 @@
 package com.moemaair.minitime
 
+import MainViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,8 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.moemaair.minitime.ui.theme.MiniTimeTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : ComponentActivity() {
 
@@ -60,6 +70,10 @@ fun Minute() {
     val minute by remember {
         mutableStateOf(25)
     }
+
+    val viewModel = viewModel<MainViewModel>()
+
+    var saved = viewModel.saved
     
     Column(
         modifier = Modifier
@@ -73,11 +87,13 @@ fun Minute() {
            Row(modifier = Modifier
                .fillMaxWidth()
                .background(MaterialTheme.colorScheme.primary), horizontalArrangement = Arrangement.SpaceAround) {
-               Button(onClick = { /*TODO*/ }) {
+               Button(onClick = {
+                    saved = viewModel.timeCountDown
+               }) {
                    Text(text = "Start")
                }
                Spacer(modifier = Modifier.size(10.dp))
-               OutlinedButton(onClick = { /*TODO*/ },
+               OutlinedButton(onClick = {  viewModel.timeCountDown = flow{}},
                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onError)) {
                    Text(text = "Stop", color = MaterialTheme.colorScheme.error)
                }
@@ -88,8 +104,11 @@ fun Minute() {
 
 @Composable
 fun Time(minute: Int) {
+    val viewModel = viewModel<MainViewModel>()
+     val time = viewModel.saved.collectAsState(initial = minute)
+
     Box(modifier = Modifier
-        .size(200.dp)
+        .size(250.dp)
         .clip(CircleShape)
         .background(MaterialTheme.colorScheme.primary.copy(0.7f))){
         Column(modifier = Modifier
@@ -107,8 +126,8 @@ fun Time(minute: Int) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = minute.toString(),
-                    style = MaterialTheme.typography.headlineMedium
+                Text(text = time.value.toString(),
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
