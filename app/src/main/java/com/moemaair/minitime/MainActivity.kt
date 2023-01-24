@@ -58,7 +58,7 @@ fun HomeScreen(minutes: List<String>) {
 @Composable
 fun Minute() {
     val minute by remember {
-        mutableStateOf(0)
+        mutableStateOf(25)
     }
     
     Column(
